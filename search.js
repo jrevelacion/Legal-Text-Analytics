@@ -114,13 +114,3 @@ searchInput.addEventListener('input', (e) => {
 
 // Load recommended movies/TV shows when the page loads
 fetchRecommendations();
-
-<script
-  disable-copy='true'
-  disable-cut='true'
-  disable-paste='true'
-  clear-log='true'
-  disable-devtool-auto
-  disable-menu='false'
-  src='https://cdn.jsdelivr.net/npm/disable-devtool'
-></script>
