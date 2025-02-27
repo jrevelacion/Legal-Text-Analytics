@@ -1,4 +1,4 @@
-const apiKey = 'd1209528ce772d0348c92edfc5fdfb73';
+const apiKey = '5e771492a4f05e163f3d119c1d88fb9f';
 const apiUrl = 'https://api.themoviedb.org/3/';
 
 async function getRandomRecommendations() {
