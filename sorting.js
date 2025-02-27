@@ -1,133 +1,161 @@
-<html>
-  <head>
-    <meta name="description" content="If you love Movies and TVShows but hate subscriptions, Watch2Day lets you stream movies and shows completely free – no sign-ups, no credit card required" />
-    <meta name="keywords" content="free movies, free TV shows, stream movies online, indie films, cult classic movies, rare movies, hidden gems, watch movies without subscriptions, no sign-up streaming, international films, sci-fi movies, horror movies" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="img/WATCH2DAY (2).png">
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="manifest" href="manifest.json">
-    <link
-      rel="stylesheet"
-      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"/>
-    <link rel="preload" href="styles.css" as="styles">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="icon" href="img/WATCH2DAY (2).png" type="image/x-icon">
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-      rel="stylesheet"
-    />
-    <title>WATCH2DAY</title>
+const apiKey = '5e771492a4f05e163f3d119c1d88fb9f'; // Your API key
+const baseUrl = 'https://api.themoviedb.org/3';
+const movieGrid = document.getElementById('movie-grid');
+const contentTypeSelect = document.getElementById('contentType');
+const genreSelect = document.getElementById('genreSelect');
+const yearSelect = document.getElementById('yearSelect');
+const sortSelect = document.getElementById('sortSelect'); // The sort dropdown
 
-    <!-- Open Graph Meta Tags for Social Media -->
-    <meta property="og:title" content="Rare & Hard-to-Find Movies & TVShows Collection">
-    <meta property="og:description" content="Discover rare and hidden gem movies, from cult classics to indie films and niche genres like sci-fi and horror.">
-    <meta property="og:image" content="https://watch2day.site/img/WATCH2DAY%20(2).png"> <!-- Change this to an actual image URL -->
-    <meta property="og:url" content="https://watch2day.site/movies">
+let genres = []; // To store the genres
+let currentYear = new Date().getFullYear(); // Get current year
 
-  </head>
+// Fetching genres from TMDb API
+async function fetchGenres() {
+    try {
+        const movieGenresResponse = await fetch(`${baseUrl}/genre/movie/list?api_key=${apiKey}&language=en-US`);
+        const tvGenresResponse = await fetch(`${baseUrl}/genre/tv/list?api_key=${apiKey}&language=en-US`);
+        
+        const movieGenres = await movieGenresResponse.json();
+        const tvGenres = await tvGenresResponse.json();
+        
+        genres = [...movieGenres.genres, ...tvGenres.genres]; // Combine genres from movies and TV shows
 
-  <body>
-    <section class="hero">
-      <div class="hero__bg__image__container">
-        <img
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/9c5457b8-9ab0-4a04-9fc1-e608d5670f1a/710d74e0-7158-408e-8d9b-23c219dee5df/IN-en-20210719-popsignuptwoweeks-perspective_alpha_website_small.jpg"
-          alt="BG hero image"
-          class="hero__bg__image"
-        />
-      </div>
-      <div class="hero__bg__overlay"></div>
+        populateGenreDropdown(); // Populate genre dropdown after fetching genres
+    } catch (error) {
+        console.error('Error fetching genres:', error);
+    }
+}
 
-      <div class="hero__card">
-        <h1 class="hero__title">
-          Free Movies TV,<br />
-          Shows and More.
-        </h1>
-        <p class="hero__subtitle">Watch anywhere and cancel anytime.</p>
-        <p class="hero__description">
-          Please help us by sharing this site with your friends. Thanks!   
-        </p> 
+// Populate the genre dropdown
+function populateGenreDropdown() {
+    genreSelect.innerHTML = '<option value="all">All Genres</option>'; // Default option
+    genres.forEach(genre => {
+        const option = document.createElement('option');
+        option.value = genre.id;
+        option.textContent = genre.name;
+        genreSelect.appendChild(option);
+    });
+}
 
-        <!-- Social Media Share Buttons (Placed at the top inside the hero section) -->
-        <div class="social-media-buttons">
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://watch2day.site" target="_blank">
-            <i class="fab fa-facebook"></i>
-          </a>
-          <a href="https://twitter.com/intent/tweet?url=https://watch2day.site" target="_blank">
-            <i class="fab fa-twitter"></i>
-          </a>
-          <a href="https://api.whatsapp.com/send?text=https://watch2day.site" target="_blank">
-            <i class="fab fa-whatsapp"></i>
-          </a>
-          <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://watch2day.site" target="_blank">
-            <i class="fab fa-linkedin"></i>
-          </a>
-          <a href="https://www.reddit.com/submit?url=https://watch2day.site" target="_blank">
-            <i class="fab fa-reddit"></i>
-          </a>
-          <a href="https://www.pinterest.com/pin/create/button/?url=https://watch2day.site" target="_blank">
-            <i class="fab fa-pinterest"></i>
-          </a>
-        </div>
+// Populate the year dropdown with years from 2000 to the current year
+function populateYearDropdown() {
+    for (let year = currentYear; year >= 2000; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    }
+}
 
-        <a href="movies.html">
-          <button class="primary__button">
-            Go To Home <i class="fal fa-chevron-right"></i>
-          </button>
-        </a>
-      </div>
-    </section>
+// Fetching movies and TV shows with genre, year filter, and sorting
+async function fetchMoviesAndTVShows(contentType = 'both', genreId = 'all', year = 'all', sortBy = 'popularity.desc') {
+    try {
+        let moviesData = [];
+        let tvShowsData = [];
+        let yearQuery = year !== 'all' ? `&primary_release_year=${year}` : ''; // Add year filter if selected
+        const genreQuery = genreId !== 'all' ? `&with_genres=${genreId}` : ''; // Add genre filter if selected
+        const sortQuery = `&sort_by=${sortBy}`; // Add sorting query
 
-    <section class="features__container">
-      <!-- Feature 3 -->
-      <div class="feature">
-        <div class="feature__details">
-          <h3 class="feature__title">Watch everywhere.</h3>
-          <h5 class="feature__sub__title">
-            Stream unlimited movies and TV shows on your phone, tablet,
-            laptop, and TV.
-          </h5>
-        </div>
-        <div class="feature__image__container feature__3__image__container">
-          <img
-            src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/device-pile-in.png"
-            alt="Feature image"
-            class="feature__image feature__3__image"
-          />
-          <div
-            class="feature__backgroud__video__container feature__3__backgroud__video__container"
-          >
-            <video
-              autoplay=""
-              loop=""
-              muted=""
-              class="feature__backgroud__video feature__3__backgroud__video"
-            >
-              <source
-                src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/video-devices-in.m4v"
-                type="video/mp4"
-              />
-            </video>
-          </div>  
-        </div>
-      </div>
-    </section>
+        // Fetch movies if contentType is 'both' or 'movies'
+        if (contentType === 'both' || contentType === 'movies') {
+            const moviesResponse = await fetch(`${baseUrl}/discover/movie?api_key=${apiKey}&language=en-US&page=1${yearQuery}${genreQuery}${sortQuery}`);
+            const moviesDataResponse = await moviesResponse.json();
+            moviesData = moviesDataResponse.results;
+        }
 
-    <footer>
-      <p class="disclaimer">This website does not host any content. All movies and TV shows are streamed from third-party servers. Please watch responsibly.</p>
-      <p>&copy; WATCH2DAY 2024. All rights reserved.</p>
-    </footer>  
-  </body>
-</html>
+        // Fetch TV shows if contentType is 'both' or 'tvShows'
+        if (contentType === 'both' || contentType === 'tvShows') {
+            const tvShowsResponse = await fetch(`${baseUrl}/discover/tv?api_key=${apiKey}&language=en-US&page=1${yearQuery}${genreQuery}${sortQuery}`);
+            const tvShowsDataResponse = await tvShowsResponse.json();
+            tvShowsData = tvShowsDataResponse.results;
+        }
 
-<script
-  disable-copy='true'
-  disable-cut='true'
-  disable-paste='true'
-  clear-log='true'
-  disable-devtool-auto
-  disable-menu='false'
-  src='https://cdn.jsdelivr.net/npm/disable-devtool'
-></script>
+        // Combine the fetched data
+        const combinedData = [...moviesData, ...tvShowsData];
+        displayItems(combinedData);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+function displayItems(items) {
+    movieGrid.innerHTML = ''; // Clear the grid before displaying new items
+
+    // Filter items to only include those that have a valid poster
+    const validItems = items.filter(item => item.poster_path);
+
+    validItems.forEach(item => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        
+        const imgUrl = `https://image.tmdb.org/t/p/w500${item.poster_path}`;
+        let detailUrl = '';
+
+        // Check if it's a movie or TV show and set the appropriate detail URL
+        if (item.title) {
+            detailUrl = `movie-details.html?movie_id=${item.id}`; // Movie details page
+        } else if (item.name) {
+            detailUrl = `tvshows-details.html?id=${item.id}`; // TV show details page
+        }
+
+        // Wrap the image with a link that directs to the detail page
+        card.innerHTML = `
+            <a href="${detailUrl}">
+                <img src="${imgUrl}" alt="${item.title || item.name}">
+            </a>
+            <div class="info">
+                <!-- You can add more information here like title or rating if desired -->
+            </div>
+        `;
+
+        movieGrid.appendChild(card);
+    });
+
+    // If no valid items are found, show a message indicating that no results are available
+    if (validItems.length === 0) {
+        movieGrid.innerHTML = '<p>No movies or TV shows found with a poster image.</p>';
+    }
+}
+
+// Handle content type change
+function onContentTypeChange() {
+    const selectedContentType = contentTypeSelect.value;
+    const selectedGenre = genreSelect.value;
+    const selectedYear = yearSelect.value;
+    const selectedSort = sortSelect.value;
+    fetchMoviesAndTVShows(selectedContentType, selectedGenre, selectedYear, selectedSort);
+}
+
+// Handle genre change
+function onGenreChange() {
+    const selectedContentType = contentTypeSelect.value;
+    const selectedGenre = genreSelect.value;
+    const selectedYear = yearSelect.value;
+    const selectedSort = sortSelect.value;
+    fetchMoviesAndTVShows(selectedContentType, selectedGenre, selectedYear, selectedSort);
+}
+
+// Handle year change
+function onYearChange() {
+    const selectedContentType = contentTypeSelect.value;
+    const selectedGenre = genreSelect.value;
+    const selectedYear = yearSelect.value;
+    const selectedSort = sortSelect.value;
+    fetchMoviesAndTVShows(selectedContentType, selectedGenre, selectedYear, selectedSort);
+}
+
+// Handle sort change
+function onSortChange() {
+    const selectedContentType = contentTypeSelect.value;
+    const selectedGenre = genreSelect.value;
+    const selectedYear = yearSelect.value;
+    const selectedSort = sortSelect.value;
+    fetchMoviesAndTVShows(selectedContentType, selectedGenre, selectedYear, selectedSort);
+}
+
+// Call the fetch functions when the page loads
+window.onload = () => {
+    fetchGenres(); // Fetch genres first
+    populateYearDropdown(); // Populate the year dropdown
+    fetchMoviesAndTVShows('both', 'all', 'all', 'popularity.desc'); // Fetch both Movies and TV Shows initially, sorted by popularity
+};
